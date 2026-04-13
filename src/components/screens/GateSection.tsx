@@ -5,11 +5,13 @@ import {
   GATE_COPY,
   LEAD_ROLE_OPTIONS,
   PIPELINE_STATUS_OPTIONS,
+  type CalculatedDiagnostic,
   type LeadFormValues,
 } from '../../data/diagnostic'
 import styles from './GateSection.module.css'
 
 interface GateSectionProps {
+  diagnostic: CalculatedDiagnostic
   lead: LeadFormValues
   sendingResults: boolean
   formRef: RefObject<HTMLFormElement | null>
@@ -18,6 +20,7 @@ interface GateSectionProps {
 }
 
 export default function GateSection({
+  diagnostic,
   lead,
   sendingResults,
   formRef,
@@ -26,16 +29,21 @@ export default function GateSection({
 }: GateSectionProps) {
   return (
     <section className={styles.screen}>
-      <article className={styles.card} id="leadGate">
-        <header className={styles.header}>
-          <h2 className={styles.title}>{GATE_COPY.heading}</h2>
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <p className={styles.label}>RESULTS LOCKED</p>
+          <h2 className={styles.heading}>{GATE_COPY.heading}</h2>
           <p className={styles.subtext}>{GATE_COPY.subtext}</p>
-        </header>
 
-        <form className={styles.form} id="lead-gate" onSubmit={onSubmit} ref={formRef}>
+          <div className={styles.previewCard} aria-hidden="true">
+            <div className={styles.previewScore}>{diagnostic.roundedScore}%</div>
+            <div className={styles.previewHeadline}>{diagnostic.content.headline}</div>
+          </div>
+        </div>
+
+        <form className={styles.form} noValidate onSubmit={onSubmit} ref={formRef}>
           <input
             className={styles.input}
-            name="firstName"
             onChange={(event) => onLeadChange('firstName', event.target.value)}
             placeholder="First Name *"
             required
@@ -43,9 +51,7 @@ export default function GateSection({
           />
 
           <input
-            autoComplete="email"
             className={styles.input}
-            name="email"
             onChange={(event) => onLeadChange('workEmail', event.target.value)}
             placeholder="Work Email *"
             required
@@ -55,7 +61,6 @@ export default function GateSection({
 
           <input
             className={styles.input}
-            name="company"
             onChange={(event) => onLeadChange('companyName', event.target.value)}
             placeholder="Company Name *"
             required
@@ -64,7 +69,6 @@ export default function GateSection({
 
           <select
             className={styles.select}
-            name="role"
             onChange={(event) => onLeadChange('role', event.target.value as LeadFormValues['role'])}
             required
             value={lead.role}
@@ -78,7 +82,6 @@ export default function GateSection({
 
           <select
             className={styles.select}
-            name="pipelineStatus"
             onChange={(event) =>
               onLeadChange('pipelineStatus', event.target.value as LeadFormValues['pipelineStatus'])
             }
@@ -94,7 +97,6 @@ export default function GateSection({
 
           <select
             className={styles.select}
-            name="arr"
             onChange={(event) => onLeadChange('arrRange', event.target.value as LeadFormValues['arrRange'])}
             value={lead.arrRange}
           >
@@ -107,10 +109,10 @@ export default function GateSection({
           </select>
 
           <button className={styles.button} disabled={sendingResults} type="submit">
-            {GATE_COPY.buttonLabel}
+            {sendingResults ? 'Sending Results…' : GATE_COPY.buttonLabel}
           </button>
         </form>
-      </article>
+      </div>
     </section>
   )
 }

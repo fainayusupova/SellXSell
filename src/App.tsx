@@ -124,12 +124,22 @@ function App() {
           lead: finalLead,
           score: diagnostic.roundedScore,
           state: diagnostic.state,
+          icpScore: diagnostic.icpScore,
+          meddicScore: diagnostic.meddicScore,
+          internalScore: diagnostic.internalScore,
           headline: diagnostic.content.headline,
+          dealStatus: diagnostic.content.dealStatus,
+          forecastImpact: diagnostic.content.forecastImpact,
+          recommendation: diagnostic.content.recommendation,
           executiveSummary: diagnostic.content.executiveSummary,
-          forecastImplication: diagnostic.content.forecastImplication,
-          executiveAction: diagnostic.content.executiveAction,
+          forecastStatement: diagnostic.content.forecastStatement,
+          executiveActions: diagnostic.content.executiveActions,
           topRisks: diagnostic.content.topRisks,
-          urgency: diagnostic.content.urgency,
+          shockLine: diagnostic.content.shockLine,
+          whatToDoNext: diagnostic.content.whatToDoNext,
+          ctaHeading: diagnostic.content.ctaHeading,
+          ctaBody: diagnostic.content.ctaBody,
+          valueStack: diagnostic.content.valueStack,
           primaryCtaLabel: diagnostic.content.primaryCtaLabel,
           secondaryCtaLabel: diagnostic.content.secondaryCtaLabel,
         })
@@ -211,11 +221,17 @@ function App() {
       {stage === 'hero' && <HeroSection onStart={handleStart} />}
 
       {stage === 'quiz' && currentQuestion && (
-        <QuizSection currentQuestion={currentQuestion} onAnswer={handleAnswer} selectedAnswer={selectedAnswer} />
+        <QuizSection
+          currentQuestion={currentQuestion}
+          currentIndex={activeQuestion}
+          onAnswer={handleAnswer}
+          selectedAnswer={selectedAnswer}
+        />
       )}
 
       {stage === 'gate' && diagnostic && (
         <GateSection
+          diagnostic={diagnostic}
           formRef={gateFormRef}
           lead={lead}
           onLeadChange={handleLeadChange}

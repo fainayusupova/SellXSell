@@ -6,12 +6,22 @@ export interface DiagnosticEmailPayload {
   lead: LeadFormValues
   score: number
   state: DiagnosticState
+  icpScore: number
+  meddicScore: number
+  internalScore: number
   headline: string
+  dealStatus: string
+  forecastImpact: string
+  recommendation: string
   executiveSummary: string
-  forecastImplication: string
-  executiveAction: string[]
+  forecastStatement: string
+  executiveActions: string[]
   topRisks: string[]
-  urgency: string
+  shockLine: string
+  whatToDoNext: string[] | null
+  ctaHeading: string
+  ctaBody: string
+  valueStack: string[]
   primaryCtaLabel: string
   secondaryCtaLabel: string
 }
@@ -33,9 +43,12 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
 
+function formatList(values: string[]) {
+  return values.map((value) => `• ${value}`).join('\n')
+}
+
 function buildBaseTemplateParams(payload: DiagnosticEmailPayload) {
-  const executiveAction = payload.executiveAction.join('\n')
-  const topRisks = payload.topRisks.join('\n')
+  const formattedTopRisks = formatList(payload.topRisks)
 
   return {
     first_name: payload.lead.firstName,
@@ -46,19 +59,26 @@ function buildBaseTemplateParams(payload: DiagnosticEmailPayload) {
     score: payload.score,
     status: payload.state.toUpperCase(),
     headline: payload.headline,
+    deal_status: payload.dealStatus,
+    forecast_impact: payload.forecastImpact,
+    recommendation: payload.recommendation,
     executive_summary: payload.executiveSummary,
-    forecast_implication: payload.forecastImplication,
-    executive_action: executiveAction,
-    top_risks: topRisks,
-    risks: topRisks,
-    urgency: payload.urgency,
+    forecast_statement: payload.forecastStatement,
+    executive_actions: formatList(payload.executiveActions),
+    top_risks: formattedTopRisks,
+    risks: formattedTopRisks,
+    shock_line: payload.shockLine,
+    what_to_do_next: payload.whatToDoNext ? formatList(payload.whatToDoNext) : '',
+    icp_score: payload.icpScore,
+    meddic_score: payload.meddicScore,
+    internal_score: payload.internalScore,
+    cta_heading: payload.ctaHeading,
+    cta_body: payload.ctaBody,
+    value_stack: formatList(payload.valueStack),
     primary_cta_label: payload.primaryCtaLabel,
     primary_cta_url: CTA_LINKS.primary,
     secondary_cta_label: payload.secondaryCtaLabel,
     secondary_cta_url: CTA_LINKS.secondary,
-    icp: '',
-    meddic: '',
-    internal: '',
   }
 }
 

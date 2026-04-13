@@ -3,20 +3,28 @@ import styles from './QuizSection.module.css'
 
 interface QuizSectionProps {
   currentQuestion: Question
+  currentIndex: number
   selectedAnswer: AnswerValue | null
   onAnswer: (value: AnswerValue) => void
 }
 
-export default function QuizSection({ currentQuestion, selectedAnswer, onAnswer }: QuizSectionProps) {
+function getProgressLabel(question: Question, currentIndex: number) {
+  return `${question.category} — Question ${currentIndex + 1} of 13`
+}
+
+export default function QuizSection({ currentQuestion, currentIndex, selectedAnswer, onAnswer }: QuizSectionProps) {
   return (
     <section className={styles.screen}>
-      <article className={styles.card}>
-        <h2 className={styles.prompt}>{currentQuestion.prompt}</h2>
+      <div className={styles.card}>
+        <p className={styles.progress}>{getProgressLabel(currentQuestion, currentIndex)}</p>
+        <p className={styles.transition}>Answer each question as if you were defending this deal in a Board forecast call.</p>
+        <h2 className={styles.question}>{currentQuestion.prompt}</h2>
 
-        <div aria-label="Diagnostic answers" className={styles.answerGrid} role="group">
+        <div className={styles.answers}>
           {ANSWER_OPTIONS.map((option) => {
             const isSelected = selectedAnswer === option.value
             const isMuted = selectedAnswer !== null && !isSelected
+
             const className = [
               styles.answerButton,
               styles[`answerButton${option.type[0].toUpperCase()}${option.type.slice(1)}`],
@@ -33,7 +41,7 @@ export default function QuizSection({ currentQuestion, selectedAnswer, onAnswer 
             )
           })}
         </div>
-      </article>
+      </div>
     </section>
   )
 }

@@ -1,5 +1,6 @@
 export type DiagnosticStage = 'hero' | 'quiz' | 'gate' | 'results'
 export type DiagnosticState = 'green' | 'yellow' | 'red'
+export type DiagnosticCategory = 'ICP' | 'MEDDIC' | 'INTERNAL ALIGNMENT'
 export type AnswerValue = 0 | 1 | 2
 export type AnswerType = 'yes' | 'partial' | 'no'
 export type LeadRole = 'CRO' | 'CFO' | 'CEO' | 'VP Sales' | 'Other'
@@ -12,6 +13,7 @@ export type ArrRange = '' | '<$10M' | '$10–50M' | '$50–100M' | '$100M+'
 
 export interface Question {
   id: number
+  category: DiagnosticCategory
   prompt: string
 }
 
@@ -26,12 +28,18 @@ export interface LeadFormValues {
 
 export interface ResultStateContent {
   headline: string
+  dealStatus: 'REAL' | 'AT RISK' | 'WILL NOT CLOSE'
+  forecastImpact: 'COMMITTABLE' | 'OVERSTATED' | 'DISTORTING'
+  recommendation: 'COMMIT' | 'DO NOT COMMIT' | 'REMOVE'
   executiveSummary: string
-  whereForecastsBreak: string
-  forecastImplication: string
-  executiveAction: string[]
+  forecastStatement: string
+  executiveActions: string[]
   topRisks: string[]
-  urgency: string
+  shockLine: string
+  whatToDoNext: string[] | null
+  ctaHeading: string
+  ctaBody: string
+  valueStack: string[]
   primaryCtaLabel: string
   secondaryCtaLabel: string
 }
@@ -39,6 +47,9 @@ export interface ResultStateContent {
 export interface CalculatedDiagnostic {
   roundedScore: number
   state: DiagnosticState
+  icpScore: number
+  meddicScore: number
+  internalScore: number
   content: ResultStateContent
 }
 
@@ -70,58 +81,19 @@ export const DEFAULT_LEAD_VALUES: LeadFormValues = {
 }
 
 export const QUESTIONS: Question[] = [
-  {
-    id: 1,
-    prompt: 'Do you have direct access to the economic buyer?',
-  },
-  {
-    id: 2,
-    prompt: 'Has the customer confirmed measurable business impact?',
-  },
-  {
-    id: 3,
-    prompt: 'Is the decision process fully defined and agreed?',
-  },
-  {
-    id: 4,
-    prompt: 'Is there a quantified business case that justifies this purchase?',
-  },
-  {
-    id: 5,
-    prompt: 'Does your team have direct access to the economic buyer?',
-  },
-  {
-    id: 6,
-    prompt: 'Are the decision criteria explicitly defined and confirmed?',
-  },
-  {
-    id: 7,
-    prompt: 'Is the decision process fully mapped — with no unknown steps?',
-  },
-  {
-    id: 8,
-    prompt: 'Is there a clear and urgent business problem driving this deal?',
-  },
-  {
-    id: 9,
-    prompt: 'Does your team have a real champion actively driving this forward?',
-  },
-  {
-    id: 10,
-    prompt: 'Does your team fully understand the competitive landscape and its position in it?',
-  },
-  {
-    id: 11,
-    prompt: 'Does your leadership team have a clear, evidence-based reason this deal will close?',
-  },
-  {
-    id: 12,
-    prompt: 'Is this deal in your forecast because of evidence — not rep belief?',
-  },
-  {
-    id: 13,
-    prompt: 'Could your leadership team defend this deal in a board-level forecast review today?',
-  },
+  { id: 1, category: 'ICP', prompt: 'Is this opportunity a true fit with your Ideal Customer Profile?' },
+  { id: 2, category: 'ICP', prompt: 'Is this consistent with deals your team has actually closed — not deals that felt close?' },
+  { id: 3, category: 'ICP', prompt: 'Did this opportunity originate from a repeatable, qualified demand source?' },
+  { id: 4, category: 'ICP', prompt: 'Is there a quantified business case that justifies this purchase?' },
+  { id: 5, category: 'ICP', prompt: 'Does your team have direct access to the economic buyer?' },
+  { id: 6, category: 'MEDDIC', prompt: 'Are the decision criteria explicitly defined and confirmed?' },
+  { id: 7, category: 'MEDDIC', prompt: 'Is the decision process fully mapped — with no unknown steps?' },
+  { id: 8, category: 'MEDDIC', prompt: 'Is there a clear and urgent business problem driving this deal?' },
+  { id: 9, category: 'MEDDIC', prompt: 'Does your team have a real champion actively driving this forward?' },
+  { id: 10, category: 'MEDDIC', prompt: 'Does your team fully understand the competitive landscape and its position in it?' },
+  { id: 11, category: 'MEDDIC', prompt: 'Does your leadership team have a clear, evidence-based reason this deal will close?' },
+  { id: 12, category: 'INTERNAL ALIGNMENT', prompt: 'Is this deal in your forecast because of evidence — not rep belief?' },
+  { id: 13, category: 'INTERNAL ALIGNMENT', prompt: 'Could your leadership team defend this deal in a board-level forecast review today?' },
 ]
 
 export const ANSWER_OPTIONS: { label: string; value: AnswerValue; type: AnswerType }[] = [
@@ -144,77 +116,128 @@ export const HERO_COPY = {
 }
 
 export const GATE_COPY = {
-  heading: 'Get Your Full Executive Breakdown',
-  subtext: 'See what’s real, what’s at risk, and what should be removed from your forecast.',
-  buttonLabel: 'See My Results',
+  heading: 'Unlock Your Deal Reality',
+  subtext: 'See what is real, what is at risk, and what will actually close.',
+  buttonLabel: 'Reveal My Result',
 }
+
+const SHARED_CTA_HEADING = 'Validate your next two quarters of forecast'
+const SHARED_CTA_BODY =
+  'Bring your forecasted deals across the next two quarters. We will show you what is real, what is at risk, and what should be removed from your forecast.'
+
+const SHARED_VALUE_STACK = [
+  'Full pipeline diagnostic across your forecast for the next two quarters',
+  'Deep analysis across ICP, MEDDIC, and internal alignment',
+  'Identification of what is real, what is at risk, and what should be removed from your forecast',
+  'Clear executive recommendation on what to commit, remove, and rebuild',
+  'Up to 3 team members included in the session',
+]
 
 export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
   green: {
     headline: 'THIS DEAL IS REAL',
-    executiveSummary: 'Validated across MEDDIC, ICP, and stakeholder alignment.',
-    whereForecastsBreak: 'Scope/criteria/priorities shift late.',
-    forecastImplication: 'Commit with inspection.',
-    executiveAction: ['Maintain access', 'Lock process', 'Prevent risk'],
-    topRisks: ['Misalignment', 'Competition', 'Timeline'],
-    urgency: 'Protect this deal before it slips.',
-    primaryCtaLabel: 'PRESSURE TEST 3–5 DEALS',
-    secondaryCtaLabel: 'VALIDATE FULL PIPELINE',
+    dealStatus: 'REAL',
+    forecastImpact: 'COMMITTABLE',
+    recommendation: 'COMMIT',
+    executiveSummary:
+      'This opportunity is qualified, validated, and aligned across stakeholders. It represents a defensible position in your forecast.',
+    forecastStatement: 'This is a deal you can confidently commit.',
+    executiveActions: [
+      'Commit with discipline — maintain inspection cadence weekly',
+      'Secure written confirmation of decision criteria and timeline',
+      'Preempt competitive disruption with executive alignment call',
+    ],
+    topRisks: ['Late-stage scope expansion', 'Competitive disruption', 'Internal deprioritization'],
+    shockLine: 'If this deal matters to your number, validate it before it turns into a late-quarter surprise.',
+    whatToDoNext: null,
+    ctaHeading: SHARED_CTA_HEADING,
+    ctaBody: SHARED_CTA_BODY,
+    valueStack: SHARED_VALUE_STACK,
+    primaryCtaLabel: 'RUN FULL PIPELINE DIAGNOSTIC →',
+    secondaryCtaLabel: 'BOOK 30-MINUTE PRESSURE TEST →',
   },
   yellow: {
     headline: 'THIS DEAL IS AT RISK',
-    executiveSummary: 'Partial validation. Gaps exist.',
-    whereForecastsBreak: 'Activity mistaken for proof.',
-    forecastImplication: 'DO NOT COMMIT.',
-    executiveAction: ['Re-engage buyer', 'Map process', 'Validate impact'],
-    topRisks: ['Missing stakeholders', 'Weak metrics', 'Undefined process'],
-    urgency: 'Fix now or it will slip.',
-    primaryCtaLabel: 'FIX AT-RISK DEALS NOW',
-    secondaryCtaLabel: 'RUN FULL DIAGNOSTIC',
+    dealStatus: 'AT RISK',
+    forecastImpact: 'OVERSTATED',
+    recommendation: 'DO NOT COMMIT',
+    executiveSummary:
+      'This deal is being carried as real, but key qualification gaps remain. Without intervention, it will slip or stall.',
+    forecastStatement: 'This deal is overstated in the forecast and cannot be relied on.',
+    executiveActions: [
+      'Do not commit — reclassify as upside until buyer is engaged',
+      'Force decision path clarity within 5 business days',
+      'Escalate to executive sponsor to anchor timeline to consequence',
+    ],
+    topRisks: ['Economic buyer not fully engaged', 'Decision process incomplete', 'Timeline not tied to consequence'],
+    shockLine: 'If this deal is in your forecast today, your number is already at risk.',
+    whatToDoNext: null,
+    ctaHeading: SHARED_CTA_HEADING,
+    ctaBody: SHARED_CTA_BODY,
+    valueStack: SHARED_VALUE_STACK,
+    primaryCtaLabel: 'RUN FULL PIPELINE DIAGNOSTIC →',
+    secondaryCtaLabel: 'BOOK 30-MINUTE PRESSURE TEST →',
   },
   red: {
     headline: 'THIS DEAL WILL NOT CLOSE',
-    executiveSummary: 'False/insufficient signals.',
-    whereForecastsBreak: 'Pipeline fiction enters.',
-    forecastImplication: 'REMOVE IMMEDIATELY.',
-    executiveAction: ['Remove', 'Reallocate', 'Requalify'],
-    topRisks: ['No buyer', 'No process', 'No urgency'],
-    urgency: 'This deal puts your number at risk.',
-    primaryCtaLabel: 'CLEAN PIPELINE NOW',
-    secondaryCtaLabel: 'BOOK PRESSURE TEST',
+    dealStatus: 'WILL NOT CLOSE',
+    forecastImpact: 'DISTORTING',
+    recommendation: 'REMOVE',
+    executiveSummary:
+      'This opportunity lacks the qualification required to progress. It should not be treated as a viable deal.',
+    forecastStatement: 'This deal is distorting your forecast and should be removed immediately.',
+    executiveActions: [
+      'Remove from forecast immediately',
+      'Reallocate resources to ICP-qualified opportunities',
+      'Rebuild pipeline using validated demand sources only',
+    ],
+    topRisks: ['No economic buyer', 'No validated business case', 'No defined decision path'],
+    shockLine: 'If multiple deals look like this, your pipeline is not weak — it is misclassified.',
+    whatToDoNext: [
+      'Bring your forecasted deals across the next two quarters.',
+      'We will show you what is real, what is at risk, and what should be removed from your forecast.',
+      'This is not an outlier.',
+      'This is how your pipeline is behaving.',
+    ],
+    ctaHeading: SHARED_CTA_HEADING,
+    ctaBody: SHARED_CTA_BODY,
+    valueStack: SHARED_VALUE_STACK,
+    primaryCtaLabel: 'RUN FULL PIPELINE DIAGNOSTIC →',
+    secondaryCtaLabel: 'BOOK 30-MINUTE PRESSURE TEST →',
   },
 }
 
-export function calculateScore(answers: AnswerValue[]): number {
-  const total = answers.reduce<number>((sum, value) => sum + value, 0)
-  const max = answers.length * 2
-
-  if (max === 0) {
-    return 0
-  }
-
-  return Math.round((total / max) * 100)
+function averageScore(values: AnswerValue[]) {
+  if (values.length === 0) return 0
+  const total = values.reduce<number>((sum, value) => sum + value, 0)
+  return total / values.length
 }
 
-export function getCategory(score: number): DiagnosticState {
-  if (score <= 40) {
-    return 'red'
-  }
-
-  if (score <= 74) {
-    return 'yellow'
-  }
-
-  return 'green'
+function toPercent(value: number) {
+  return Math.round((value / 2) * 100)
 }
 
 export function calculateDiagnostic(answers: AnswerValue[]): CalculatedDiagnostic {
-  const roundedScore = calculateScore(answers)
-  const state = getCategory(roundedScore)
+  const icpScore = toPercent(averageScore(answers.slice(0, 5)))
+  const meddicScore = toPercent(averageScore(answers.slice(5, 11)))
+  const internalScore = toPercent(averageScore(answers.slice(11, 13)))
+
+  const weightedScore = (((icpScore / 100) * 0.2) + ((meddicScore / 100) * 0.6) + ((internalScore / 100) * 0.2)) * 100
+  const roundedScore = Math.round(weightedScore)
+
+  let state: DiagnosticState = 'red'
+  if (roundedScore >= 75) {
+    state = 'green'
+  } else if (roundedScore >= 50) {
+    state = 'yellow'
+  }
 
   return {
     roundedScore,
     state,
+    icpScore,
+    meddicScore,
+    internalScore,
     content: RESULT_CONTENT[state],
   }
 }
