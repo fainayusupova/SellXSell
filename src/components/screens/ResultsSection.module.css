@@ -219,6 +219,11 @@
   gap: 16px;
 }
 
+.secondaryCtaGroup {
+  display: grid;
+  gap: 10px;
+}
+
 .primaryLink,
 .secondaryLink {
   display: grid;
@@ -243,6 +248,14 @@
   border: 1px solid rgba(109, 92, 255, 0.45);
   background: rgba(109, 92, 255, 0.08);
   color: #FFFFFF;
+}
+
+.secondarySubtext {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .primaryLink:hover,

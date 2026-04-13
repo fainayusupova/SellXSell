@@ -124,6 +124,8 @@ export const GATE_COPY = {
 const SHARED_CTA_HEADING = 'Validate your next two quarters of forecast'
 const SHARED_CTA_BODY =
   'Bring your forecasted deals across the next two quarters. We will show you what is real, what is at risk, and what should be removed from your forecast.'
+const SHARED_PRIMARY_CTA_LABEL = 'Run Full Pipeline Diagnostic \u2014 $1,800'
+const SHARED_SECONDARY_CTA_LABEL = 'Not Ready Yet? Pressure Test My Pipeline'
 
 const SHARED_VALUE_STACK = [
   'Full pipeline diagnostic across your forecast for the next two quarters',
@@ -153,8 +155,8 @@ export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
     ctaHeading: SHARED_CTA_HEADING,
     ctaBody: SHARED_CTA_BODY,
     valueStack: SHARED_VALUE_STACK,
-    primaryCtaLabel: 'RUN FULL PIPELINE DIAGNOSTIC →',
-    secondaryCtaLabel: 'BOOK 30-MINUTE PRESSURE TEST →',
+    primaryCtaLabel: SHARED_PRIMARY_CTA_LABEL,
+    secondaryCtaLabel: SHARED_SECONDARY_CTA_LABEL,
   },
   yellow: {
     headline: 'THIS DEAL IS AT RISK',
@@ -175,8 +177,8 @@ export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
     ctaHeading: SHARED_CTA_HEADING,
     ctaBody: SHARED_CTA_BODY,
     valueStack: SHARED_VALUE_STACK,
-    primaryCtaLabel: 'RUN FULL PIPELINE DIAGNOSTIC →',
-    secondaryCtaLabel: 'BOOK 30-MINUTE PRESSURE TEST →',
+    primaryCtaLabel: SHARED_PRIMARY_CTA_LABEL,
+    secondaryCtaLabel: SHARED_SECONDARY_CTA_LABEL,
   },
   red: {
     headline: 'THIS DEAL WILL NOT CLOSE',
@@ -202,8 +204,8 @@ export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
     ctaHeading: SHARED_CTA_HEADING,
     ctaBody: SHARED_CTA_BODY,
     valueStack: SHARED_VALUE_STACK,
-    primaryCtaLabel: 'RUN FULL PIPELINE DIAGNOSTIC →',
-    secondaryCtaLabel: 'BOOK 30-MINUTE PRESSURE TEST →',
+    primaryCtaLabel: SHARED_PRIMARY_CTA_LABEL,
+    secondaryCtaLabel: SHARED_SECONDARY_CTA_LABEL,
   },
 }
 

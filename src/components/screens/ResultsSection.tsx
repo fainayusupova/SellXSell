@@ -20,6 +20,9 @@ function getStateClass(state: CalculatedDiagnostic['state']) {
   return styles.stateRed
 }
 
+const SECONDARY_CTA_SUBTEXT =
+  'Let\u2019s pressure test your pipeline live and expose what\u2019s actually going to close.'
+
 export default function ResultsSection({ diagnostic }: ResultsSectionProps) {
   const stateClass = getStateClass(diagnostic.state)
   const bulletColor =
@@ -114,12 +117,29 @@ export default function ResultsSection({ diagnostic }: ResultsSectionProps) {
           <div className={styles.price}>$1,800</div>
 
           <div className={styles.ctaStack}>
-            <a className={styles.primaryLink} href={CTA_LINKS.primary}>
+            <a
+              className={styles.primaryLink}
+              href={CTA_LINKS.primary}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               {diagnostic.content.primaryCtaLabel}
             </a>
-            <a className={styles.secondaryLink} href={CTA_LINKS.secondary}>
-              {diagnostic.content.secondaryCtaLabel}
-            </a>
+            <div className={styles.secondaryCtaGroup}>
+              <a
+                className={styles.secondaryLink}
+                href={CTA_LINKS.secondary}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                {diagnostic.content.secondaryCtaLabel}
+              </a>
+              <p className={styles.secondarySubtext}>
+                Not ready yet?
+                <br />
+                {SECONDARY_CTA_SUBTEXT}
+              </p>
+            </div>
           </div>
         </section>
       </div>
