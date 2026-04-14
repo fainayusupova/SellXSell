@@ -73,6 +73,13 @@
   align-content: start;
 }
 
+.helperText {
+  margin: -2px 0 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .input,
 .select {
   width: 100%;

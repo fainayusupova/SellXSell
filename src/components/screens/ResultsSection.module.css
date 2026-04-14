@@ -2,6 +2,29 @@
   padding: 48px 20px 80px;
 }
 
+.betaBanner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: min(1100px, 100%);
+  margin: 0 auto 20px;
+  padding: 14px 18px;
+  border: 1px solid rgba(109, 92, 255, 0.22);
+  border-radius: 16px;
+  background: rgba(15, 19, 26, 0.94);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+  display: grid;
+  gap: 4px;
+}
+
+.betaBannerLine {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .container {
   width: min(1100px, 100%);
   display: grid;
@@ -74,6 +97,15 @@
   gap: 12px;
 }
 
+.teamShare {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(109, 92, 255, 0.22);
+  background: rgba(109, 92, 255, 0.08);
+}
+
 .label {
   color: #D8D0FF;
   font-size: 12px;
@@ -86,6 +118,21 @@
   color: var(--text-primary);
   font-size: 16px;
   line-height: 1.62;
+}
+
+.teamShareHeading {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.teamShareSupporting {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .categoryScores {
@@ -207,34 +254,27 @@
   transform: translateY(-50%);
 }
 
-.price {
-  color: var(--text-primary);
-  font-size: 40px;
-  font-weight: 900;
-  line-height: 1;
-}
-
 .ctaStack {
   display: grid;
   gap: 16px;
 }
 
-.secondaryCtaGroup {
-  display: grid;
-  gap: 10px;
-}
-
 .primaryLink,
-.secondaryLink {
+.secondaryButton,
+.copyButton {
   display: grid;
   place-items: center;
   width: 100%;
   min-height: 56px;
+  border: 0;
   border-radius: 12px;
   padding: 18px 24px;
   text-align: center;
   font-size: 16px;
   font-weight: 800;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -244,22 +284,21 @@
   color: #FFFFFF;
 }
 
-.secondaryLink {
+.secondaryButton,
+.copyButton {
   border: 1px solid rgba(109, 92, 255, 0.45);
   background: rgba(109, 92, 255, 0.08);
   color: #FFFFFF;
 }
 
-.secondarySubtext {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 14px;
-  line-height: 1.6;
-  text-align: center;
+.copyButton {
+  width: fit-content;
+  min-width: 220px;
 }
 
 .primaryLink:hover,
-.secondaryLink:hover {
+.secondaryButton:hover,
+.copyButton:hover {
   transform: translateY(-1px);
 }
 
@@ -279,7 +318,8 @@
   }
 
   .primaryLink,
-  .secondaryLink {
+  .secondaryButton,
+  .copyButton {
     width: 100%;
   }
 }

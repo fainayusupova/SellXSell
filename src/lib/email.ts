@@ -1,6 +1,6 @@
 import emailjs from '@emailjs/browser'
 
-import { CTA_LINKS, OWNER_EMAIL, type DiagnosticState, type LeadFormValues } from '../data/diagnostic'
+import { OWNER_EMAIL, type DiagnosticState, type LeadFormValues } from '../data/diagnostic'
 
 export interface DiagnosticEmailPayload {
   lead: LeadFormValues
@@ -26,10 +26,12 @@ export interface DiagnosticEmailPayload {
   secondaryCtaLabel: string
 }
 
-const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
-const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-const userTemplateId = import.meta.env.VITE_EMAILJS_USER_TEMPLATE_ID
-const ownerTemplateId = import.meta.env.VITE_EMAILJS_OWNER_TEMPLATE_ID
+const env = import.meta.env as unknown as Record<string, string | undefined>
+
+const serviceId = env.VITE_EMAILJS_SERVICE_ID
+const publicKey = env.VITE_EMAILJS_PUBLIC_KEY
+const userTemplateId = env.VITE_EMAILJS_TEMPLATE_USER_ID
+const ownerTemplateId = env.VITE_EMAILJS_TEMPLATE_OWNER_ID
 
 export const emailConfigurationReady = Boolean(
   serviceId && publicKey && userTemplateId && ownerTemplateId,
@@ -44,41 +46,20 @@ function isValidEmail(value: string) {
 }
 
 function formatList(values: string[]) {
-  return values.map((value) => `• ${value}`).join('\n')
+  return values.map((value) => `- ${value}`).join('\n')
 }
 
 function buildBaseTemplateParams(payload: DiagnosticEmailPayload) {
-  const formattedTopRisks = formatList(payload.topRisks)
-
   return {
-    first_name: payload.lead.firstName,
-    company_name: payload.lead.companyName,
-    role: payload.lead.role,
-    pipeline_status: payload.lead.pipelineStatus,
-    arr_range: payload.lead.arrRange,
+    subject: 'Your Revenue Diagnostic Results',
+    preview:
+      'Here is your score, your forecast assessment, and the next actions required before you commit this number.',
     score: payload.score,
-    status: payload.state.toUpperCase(),
-    headline: payload.headline,
-    deal_status: payload.dealStatus,
-    forecast_impact: payload.forecastImpact,
-    recommendation: payload.recommendation,
+    assessment: payload.headline,
     executive_summary: payload.executiveSummary,
-    forecast_statement: payload.forecastStatement,
-    executive_actions: formatList(payload.executiveActions),
-    top_risks: formattedTopRisks,
-    risks: formattedTopRisks,
-    shock_line: payload.shockLine,
-    what_to_do_next: payload.whatToDoNext ? formatList(payload.whatToDoNext) : '',
-    icp_score: payload.icpScore,
-    meddic_score: payload.meddicScore,
-    internal_score: payload.internalScore,
-    cta_heading: payload.ctaHeading,
-    cta_body: payload.ctaBody,
-    value_stack: formatList(payload.valueStack),
-    primary_cta_label: payload.primaryCtaLabel,
-    primary_cta_url: CTA_LINKS.primary,
-    secondary_cta_label: payload.secondaryCtaLabel,
-    secondary_cta_url: CTA_LINKS.secondary,
+    top_risks: formatList(payload.topRisks),
+    actions: formatList(payload.executiveActions),
+    reply_cta: 'RUN MY PIPELINE',
   }
 }
 

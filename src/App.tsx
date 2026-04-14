@@ -17,6 +17,23 @@ import {
 import { sendDiagnosticEmails } from './lib/email'
 import { clearSession, loadSession, saveLead, saveSession } from './lib/storage'
 
+const BLOCKED_EMAIL_DOMAINS = new Set([
+  'gmail.com',
+  'yahoo.com',
+  'outlook.com',
+  'hotmail.com',
+  'icloud.com',
+  'aol.com',
+  'live.com',
+  'msn.com',
+  'me.com',
+  'protonmail.com',
+  'proton.me',
+])
+
+const PERSONAL_EMAIL_BLOCK_MESSAGE =
+  'Please use your company email so we can properly assess your pipeline and identify the right stakeholders inside the account.'
+
 function hasAdminQueryParam() {
   if (typeof window === 'undefined') {
     return false
@@ -36,6 +53,13 @@ function ensureAdminLead(lead: LeadFormValues): LeadFormValues {
   }
 }
 
+function isBlockedPersonalEmail(email: string) {
+  const normalizedEmail = email.trim().toLowerCase()
+  const domain = normalizedEmail.split('@')[1]
+
+  return Boolean(domain && BLOCKED_EMAIL_DOMAINS.has(domain))
+}
+
 function App() {
   const [initialSession] = useState(() => loadSession())
   const [stage, setStage] = useState<DiagnosticStage>(initialSession.stage)
@@ -47,7 +71,6 @@ function App() {
   const [adminBypass, setAdminBypass] = useState(initialSession.adminBypass || hasAdminQueryParam())
 
   const answerTimeoutRef = useRef<number | null>(null)
-  const bypassGuardRef = useRef(false)
   const gateFormRef = useRef<HTMLFormElement | null>(null)
 
   const currentQuestion = QUESTIONS[activeQuestion]
@@ -179,24 +202,6 @@ function App() {
     }, 200)
   }
 
-  useEffect(() => {
-    if (stage !== 'gate') {
-      bypassGuardRef.current = false
-      return
-    }
-
-    const bypassByEmail = lead.workEmail.trim().toLowerCase() === OWNER_EMAIL
-    const bypassByUrl = hasAdminQueryParam()
-    const canBypass = diagnostic && (bypassByEmail || bypassByUrl || adminBypass)
-
-    if (!canBypass || bypassGuardRef.current) {
-      return
-    }
-
-    bypassGuardRef.current = true
-    void unlockResults(ensureAdminLead(lead), true)
-  }, [adminBypass, diagnostic, lead, stage, unlockResults])
-
   const handleLeadChange = <K extends keyof LeadFormValues>(field: K, value: LeadFormValues[K]) => {
     setLead((previousLead) => ({
       ...previousLead,
@@ -207,13 +212,22 @@ function App() {
   const handleUnlockResults = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (!gateFormRef.current?.reportValidity()) {
+    const form = gateFormRef.current
+
+    if (!form?.reportValidity()) {
       return
     }
 
-    const bypassByEmail = lead.workEmail.trim().toLowerCase() === OWNER_EMAIL
-    const bypassByUrl = hasAdminQueryParam()
-    await unlockResults(lead, bypassByEmail || bypassByUrl)
+    const emailInput = form.querySelector<HTMLInputElement>('input[type="email"]')
+    emailInput?.setCustomValidity('')
+
+    if (isBlockedPersonalEmail(lead.workEmail)) {
+      emailInput?.setCustomValidity(PERSONAL_EMAIL_BLOCK_MESSAGE)
+      emailInput?.reportValidity()
+      return
+    }
+
+    await unlockResults(lead, false)
   }
 
   return (

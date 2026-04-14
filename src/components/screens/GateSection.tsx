@@ -52,12 +52,20 @@ export default function GateSection({
 
           <input
             className={styles.input}
-            onChange={(event) => onLeadChange('workEmail', event.target.value)}
+            onChange={(event) => {
+              event.currentTarget.setCustomValidity('')
+              onLeadChange('workEmail', event.target.value)
+            }}
             placeholder="Work Email *"
             required
             type="email"
             value={lead.workEmail}
           />
+
+          <p className={styles.helperText}>
+            Use your company email so SellXSell can identify the account correctly and route follow-up to the right
+            leadership team.
+          </p>
 
           <input
             className={styles.input}
