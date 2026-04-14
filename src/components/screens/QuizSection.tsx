@@ -1,4 +1,4 @@
-import { ANSWER_OPTIONS, type AnswerValue, type Question } from '../../data/diagnostic'
+import { ANSWER_OPTIONS, QUESTIONS, type AnswerValue, type Question } from '../../data/diagnostic'
 import styles from './QuizSection.module.css'
 
 interface QuizSectionProps {
@@ -9,33 +9,58 @@ interface QuizSectionProps {
 }
 
 function getProgressLabel(question: Question, currentIndex: number) {
-  return `${question.category} — Question ${currentIndex + 1} of 13`
+  return `${question.category} \u2014 Question ${currentIndex + 1} of ${QUESTIONS.length}`
 }
 
-export default function QuizSection({ currentQuestion, currentIndex, selectedAnswer, onAnswer }: QuizSectionProps) {
+function getProgressPercent(currentIndex: number, selectedAnswer: AnswerValue | null) {
+  const completedQuestions = currentIndex + (selectedAnswer !== null ? 1 : 0)
+  return (completedQuestions / QUESTIONS.length) * 100
+}
+
+export default function QuizSection({
+  currentQuestion,
+  currentIndex,
+  selectedAnswer,
+  onAnswer,
+}: QuizSectionProps) {
+  const progressPercent = getProgressPercent(currentIndex, selectedAnswer)
+
   return (
     <section className={styles.screen}>
       <div className={styles.card}>
-        <p className={styles.progress}>{getProgressLabel(currentQuestion, currentIndex)}</p>
+        <div className={styles.progressWrap}>
+          <p className={styles.progressLabel}>{getProgressLabel(currentQuestion, currentIndex)}</p>
+          <div className={styles.progressTrack} aria-hidden="true">
+            <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+          </div>
+        </div>
+
         <p className={styles.transition}>Answer each question as if you were defending this deal in a Board forecast call.</p>
+
         <h2 className={styles.question}>{currentQuestion.prompt}</h2>
 
         <div className={styles.answers}>
           {ANSWER_OPTIONS.map((option) => {
+            const variantKey = `${option.type[0].toUpperCase()}${option.type.slice(1)}`
             const isSelected = selectedAnswer === option.value
             const isMuted = selectedAnswer !== null && !isSelected
 
             const className = [
               styles.answerButton,
-              styles[`answerButton${option.type[0].toUpperCase()}${option.type.slice(1)}`],
-              isSelected && styles.answerButtonActive,
+              styles[`answerButton${variantKey}`],
+              isSelected && styles[`answerButton${variantKey}Active`],
               isMuted && styles.answerButtonMuted,
             ]
               .filter(Boolean)
               .join(' ')
 
             return (
-              <button className={className} key={option.label} onClick={() => onAnswer(option.value)} type="button">
+              <button
+                key={option.value}
+                className={className}
+                onClick={() => onAnswer(option.value)}
+                type="button"
+              >
                 {option.label}
               </button>
             )

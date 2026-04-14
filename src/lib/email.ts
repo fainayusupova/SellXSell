@@ -28,13 +28,14 @@ export interface DiagnosticEmailPayload {
 
 const env = import.meta.env as unknown as Record<string, string | undefined>
 
-const serviceId = env.VITE_EMAILJS_SERVICE_ID
 const publicKey = env.VITE_EMAILJS_PUBLIC_KEY
-const userTemplateId = env.VITE_EMAILJS_TEMPLATE_USER_ID
-const ownerTemplateId = env.VITE_EMAILJS_TEMPLATE_OWNER_ID
+const serviceId = env.VITE_EMAILJS_SERVICE_ID
+const templateUserId = env.VITE_EMAILJS_TEMPLATE_USER_ID
+const templateOwnerId = env.VITE_EMAILJS_TEMPLATE_OWNER_ID
+const calendlyLink = 'https://calendly.com/sellxsellrev'
 
 export const emailConfigurationReady = Boolean(
-  serviceId && publicKey && userTemplateId && ownerTemplateId,
+  publicKey && serviceId && templateUserId && templateOwnerId,
 )
 
 function normalizeEmail(value: string) {
@@ -50,16 +51,44 @@ function formatList(values: string[]) {
 }
 
 function buildBaseTemplateParams(payload: DiagnosticEmailPayload) {
+  const sharedTemplateParams = {
+    reply_cta: 'Pressure Test My Pipeline Live',
+    calendly_link: calendlyLink,
+    primary_cta_label: 'Pressure Test My Pipeline Live',
+    primary_cta_url: calendlyLink,
+  }
+
   return {
+    first_name: payload.lead.firstName,
+    company_name: payload.lead.companyName,
+    role: payload.lead.role,
+    pipeline_status: payload.lead.pipelineStatus,
+    arr_range: payload.lead.arrRange,
+    score: payload.score,
+    status: payload.state.toUpperCase(),
+    headline: payload.headline,
+    assessment: payload.headline,
+    deal_status: payload.dealStatus,
+    forecast_impact: payload.forecastImpact,
+    recommendation: payload.recommendation,
+    executive_summary: payload.executiveSummary,
+    forecast_statement: payload.forecastStatement,
+    executive_actions: formatList(payload.executiveActions),
+    actions: formatList(payload.executiveActions),
+    top_risks: formatList(payload.topRisks),
+    risks: formatList(payload.topRisks),
+    shock_line: payload.shockLine,
+    what_to_do_next: payload.whatToDoNext ? formatList(payload.whatToDoNext) : '',
+    icp_score: payload.icpScore,
+    meddic_score: payload.meddicScore,
+    internal_score: payload.internalScore,
+    cta_heading: payload.ctaHeading,
+    cta_body: payload.ctaBody,
+    value_stack: formatList(payload.valueStack),
     subject: 'Your Revenue Diagnostic Results',
     preview:
       'Here is your score, your forecast assessment, and the next actions required before you commit this number.',
-    score: payload.score,
-    assessment: payload.headline,
-    executive_summary: payload.executiveSummary,
-    top_risks: formatList(payload.topRisks),
-    actions: formatList(payload.executiveActions),
-    reply_cta: 'RUN MY PIPELINE',
+    ...sharedTemplateParams,
   }
 }
 
@@ -82,14 +111,12 @@ function buildTemplateParams(payload: DiagnosticEmailPayload, recipientEmail: st
 export async function sendDiagnosticEmails(payload: DiagnosticEmailPayload) {
   const normalizedUserEmail = normalizeEmail(payload.lead.workEmail)
 
-  if (
-    !emailConfigurationReady ||
-    !serviceId ||
-    !publicKey ||
-    !userTemplateId ||
-    !ownerTemplateId ||
-    !isValidEmail(normalizedUserEmail)
-  ) {
+  if (!publicKey || !serviceId || !templateUserId || !templateOwnerId) {
+    console.warn('EmailJS is not fully configured. Results email skipped.')
+    return
+  }
+
+  if (!isValidEmail(normalizedUserEmail)) {
     return
   }
 
@@ -97,8 +124,8 @@ export async function sendDiagnosticEmails(payload: DiagnosticEmailPayload) {
   const ownerTemplateParams = buildTemplateParams(payload, OWNER_EMAIL)
 
   const results = await Promise.allSettled([
-    emailjs.send(serviceId, userTemplateId, userTemplateParams, { publicKey }),
-    emailjs.send(serviceId, ownerTemplateId, ownerTemplateParams, { publicKey }),
+    emailjs.send(serviceId, templateUserId, userTemplateParams, { publicKey }),
+    emailjs.send(serviceId, templateOwnerId, ownerTemplateParams, { publicKey }),
   ])
 
   const [userResult, ownerResult] = results

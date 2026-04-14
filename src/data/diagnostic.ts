@@ -56,8 +56,8 @@ export interface CalculatedDiagnostic {
 export const OWNER_EMAIL = 'shelley@sellxsell.com'
 
 export const CTA_LINKS = {
-  primary: import.meta.env.VITE_PRIMARY_CTA_URL ?? '#',
-  secondary: import.meta.env.VITE_SECONDARY_CTA_URL ?? '#',
+  primary: 'https://calendly.com/sellxsellrev',
+  secondary: 'https://calendly.com/sellxsellrev',
 }
 
 export const LEAD_ROLE_OPTIONS: LeadRole[] = ['CRO', 'CFO', 'CEO', 'VP Sales', 'Other']
@@ -118,14 +118,16 @@ export const HERO_COPY = {
 export const GATE_COPY = {
   heading: 'Unlock Your Deal Reality',
   subtext: 'See what is real, what is at risk, and what will actually close.',
-  buttonLabel: 'Reveal My Result',
+  buttonLabel: 'Reveal My Deal Reality',
 }
 
 const SHARED_CTA_HEADING = 'Validate your next two quarters of forecast'
 const SHARED_CTA_BODY =
   'Bring your forecasted deals across the next two quarters. We will show you what is real, what is at risk, and what should be removed from your forecast.'
-const SHARED_PRIMARY_CTA_LABEL = 'Run Full Pipeline Diagnostic \u2014 $1,800'
-const SHARED_SECONDARY_CTA_LABEL = 'Not Ready Yet? Pressure Test My Pipeline'
+const SHARED_PRIMARY_CTA_LABEL = 'Pressure Test My Pipeline Live'
+export const COPY_DIAGNOSTIC_LABEL = 'Copy This Diagnostic'
+export const COPY_DIAGNOSTIC_HELPER =
+  'Share this diagnostic with your leadership team before the forecast call.'
 
 const SHARED_VALUE_STACK = [
   'Full pipeline diagnostic across your forecast for the next two quarters',
@@ -156,7 +158,7 @@ export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
     ctaBody: SHARED_CTA_BODY,
     valueStack: SHARED_VALUE_STACK,
     primaryCtaLabel: SHARED_PRIMARY_CTA_LABEL,
-    secondaryCtaLabel: SHARED_SECONDARY_CTA_LABEL,
+    secondaryCtaLabel: COPY_DIAGNOSTIC_LABEL,
   },
   yellow: {
     headline: 'THIS DEAL IS AT RISK',
@@ -178,7 +180,7 @@ export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
     ctaBody: SHARED_CTA_BODY,
     valueStack: SHARED_VALUE_STACK,
     primaryCtaLabel: SHARED_PRIMARY_CTA_LABEL,
-    secondaryCtaLabel: SHARED_SECONDARY_CTA_LABEL,
+    secondaryCtaLabel: COPY_DIAGNOSTIC_LABEL,
   },
   red: {
     headline: 'THIS DEAL WILL NOT CLOSE',
@@ -205,7 +207,7 @@ export const RESULT_CONTENT: Record<DiagnosticState, ResultStateContent> = {
     ctaBody: SHARED_CTA_BODY,
     valueStack: SHARED_VALUE_STACK,
     primaryCtaLabel: SHARED_PRIMARY_CTA_LABEL,
-    secondaryCtaLabel: SHARED_SECONDARY_CTA_LABEL,
+    secondaryCtaLabel: COPY_DIAGNOSTIC_LABEL,
   },
 }
 

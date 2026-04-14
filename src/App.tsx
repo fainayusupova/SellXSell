@@ -199,7 +199,7 @@ function App() {
       }
 
       setStage('gate')
-    }, 200)
+    }, 420)
   }
 
   const handleLeadChange = <K extends keyof LeadFormValues>(field: K, value: LeadFormValues[K]) => {
